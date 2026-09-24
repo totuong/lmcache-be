@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Tag(name = "Chat Controller", description = "Endpoints for prompt-based chat, streaming responses, and chat history retrieval")
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/chat")
+@RequestMapping({"/api/v1/chat", "/chat"})
 @RequiredArgsConstructor
 @Slf4j
 public class ChatController {

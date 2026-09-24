@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @Tag(name = "Cache Controller", description = "Endpoints for inspecting prefix cache statistics, hit ratios, and saved tokens")
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/cache")
+@RequestMapping({"/api/v1/cache", "/cache"})
 @RequiredArgsConstructor
 public class CacheController {
 

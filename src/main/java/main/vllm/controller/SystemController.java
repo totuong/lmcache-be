@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @Tag(name = "System Controller", description = "Endpoints for monitoring system health, LLM model settings, and database connectivity")
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/system")
+@RequestMapping({"/api/v1/system", "/system"})
 @RequiredArgsConstructor
 public class SystemController {
 

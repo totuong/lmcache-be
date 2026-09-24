@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @Tag(name = "Metrics Controller", description = "Endpoints for checking vLLM engine metrics, prefix cache hits, and performance statistics")
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/metrics")
+@RequestMapping({"/api/v1/metrics", "/metrics"})
 @RequiredArgsConstructor
 public class MetricsController {
 
