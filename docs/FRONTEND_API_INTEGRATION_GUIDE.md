@@ -207,6 +207,84 @@ Kiểm tra trạng thái Backend, kết nối Database PostgreSQL, thông tin Mo
 
 ---
 
+### 3.5. API Cấu Hình L2 Cache (Redis / Distributed Tier) (`/api/v1/cache/l2`)
+
+Cho phép xem, kiểm tra kết nối Redis, lưu & tự động áp dụng cấu hình L2 Cache vào file `lmcache_vllm.yaml` của vLLM.
+
+- **A. Lấy cấu hình L2 hiện tại:**
+  - **Endpoint:** `GET /api/v1/cache/l2`
+  - **Response Body (`ResponseObject<L2CacheConfigDTO>`):**
+    ```json
+    {
+      "status": "SUCCESS",
+      "message": "L2 cache configuration retrieved successfully",
+      "data": {
+        "id": 1,
+        "enabled": true,
+        "storageType": "REDIS",
+        "host": "localhost",
+        "port": 6379,
+        "hasPassword": false,
+        "maskedPassword": null,
+        "chunkSize": 256,
+        "maxLocalCpuSizeGb": 5.0,
+        "remoteSerde": "naive",
+        "status": "ACTIVE",
+        "lastErrorMessage": null,
+        "remoteUrl": "redis://localhost:6379",
+        "yamlContent": "chunk_size: 256\nlocal_cpu: true\nmax_local_cpu_size: 5.0\nremote_url: \"redis://localhost:6379\"\nremote_serde: \"naive\"\n"
+      }
+    }
+    ```
+
+- **B. Kiểm tra kết nối Redis (Test Connection):**
+  - **Endpoint:** `POST /api/v1/cache/l2/test`
+  - **Request Body:**
+    ```json
+    {
+      "host": "localhost",
+      "port": 6379,
+      "password": "",
+      "timeoutMs": 3000
+    }
+    ```
+  - **Response Body:**
+    ```json
+    {
+      "status": "SUCCESS",
+      "message": "Kết nối Redis thành công!",
+      "data": {
+        "connected": true,
+        "message": "Kết nối Redis thành công! PING -> +PONG",
+        "latencyMs": 4,
+        "endpoint": "localhost:6379"
+      }
+    }
+    ```
+
+- **C. Lưu & Áp dụng cấu hình L2 (Ghi lmcache_vllm.yaml & Reload):**
+  - **Endpoint:** `POST /api/v1/cache/l2`
+  - **Request Body:**
+    ```json
+    {
+      "enabled": true,
+      "host": "localhost",
+      "port": 6379,
+      "password": "",
+      "chunkSize": 256,
+      "maxLocalCpuSizeGb": 5.0,
+      "remoteSerde": "naive"
+    }
+    ```
+
+- **D. Tắt L2 Cache (Chuyển về L1 CPU Cache):**
+  - **Endpoint:** `DELETE /api/v1/cache/l2`
+
+- **E. Xem trước file YAML:**
+  - **Endpoint:** `GET /api/v1/cache/l2/yaml`
+
+---
+
 ## 4. Khai Báo TypeScript Interfaces (`types/api.ts`)
 
 Tạo file `src/types/api.ts` trong dự án Frontend:
@@ -299,6 +377,41 @@ export interface SystemStatusDTO {
   uptimeSeconds: number;
   freeMemoryMb: number;
   totalMemoryMb: number;
+}
+
+// DTO Cấu Hình L2 Cache (Redis)
+export interface L2CacheConfigDTO {
+  id?: number;
+  enabled: boolean;
+  storageType?: string;
+  host: string;
+  port: number;
+  password?: string;
+  hasPassword?: boolean;
+  maskedPassword?: string;
+  chunkSize?: number;
+  maxLocalCpuSizeGb?: number;
+  remoteSerde?: string;
+  status?: string; // "ACTIVE" | "DISABLED" | "ERROR"
+  lastErrorMessage?: string;
+  remoteUrl?: string;
+  yamlContent?: string;
+  updatedAt?: string;
+}
+
+// Request & Response Kiểm Tra Kết Nối Redis
+export interface RedisConnectionTestRequest {
+  host: string;
+  port: number;
+  password?: string;
+  timeoutMs?: number;
+}
+
+export interface RedisConnectionTestResponse {
+  connected: boolean;
+  message: string;
+  latencyMs: number;
+  endpoint: string;
 }
 ```
 
